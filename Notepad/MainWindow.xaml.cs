@@ -9,7 +9,7 @@ namespace Notepad
         public MainWindow()
         {
             InitializeComponent();
-            TextEditor.handler = new MainWindowHandler(this);
+            TextEditor.handler = new Utilities.MainWindowHandler(this);
             Content = new TextEditor();
         }
 

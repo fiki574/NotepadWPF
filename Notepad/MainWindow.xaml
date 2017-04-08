@@ -5,5 +5,5 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notepad"
         mc:Ignorable="d"
-        Title="Untitled - Notepad WPF" WindowStartupLocation="CenterScreen" Height="550" Width="725" SizeChanged="TextData_SizeChanged">
+        Title="Novi tekstni dokument - Notepad WPF" WindowStartupLocation="CenterScreen" Height="550" Width="725" SizeChanged="TextData_SizeChanged">
 </Window>
