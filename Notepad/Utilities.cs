@@ -2,6 +2,7 @@
 {
     public class Utilities
     {
+        //Handler za glavni prozor
         public class MainWindowHandler
         {
             private MainWindow window;
@@ -17,6 +18,23 @@
             }
         }
 
+        //Handler za TextEditor layout
+        public class TextEditorHandler
+        {
+            private TextEditor window;
+
+            public TextEditorHandler(TextEditor window)
+            {
+                this.window = window;
+            }
+
+            public void Resize(System.Windows.Size s)
+            {
+                window.Resize(s);
+            }
+        }
+
+        //enumeracija sa svim MenuItem članovima reprezentiranim numeričkim vrijednostima
         public enum NotepadMenuItem
         {
             Invalid = -1,
@@ -45,6 +63,7 @@
             OProgramu = 22
         }
 
+        //funckija za pretvaranje object source-a u enum vrijednost | NAPOMENA: nepotrebno i viška, ali eto... reda radi dodano
         public static NotepadMenuItem GetItem(object source)
         {
             var o = source as System.Windows.Controls.MenuItem;

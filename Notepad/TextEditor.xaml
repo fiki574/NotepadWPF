@@ -10,40 +10,40 @@
         <TextBox x:Name="TextData" HorizontalAlignment="Left" Height="82" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,18,0,0"></TextBox>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
-                <MenuItem Header="_Datoteka">
-                    <MenuItem Header="_Nova" Click="Handler_Click"/>
-                    <MenuItem Header="_Otvori..." Click="Handler_Click"/>
-                    <MenuItem Header="_Spremi" Click="Handler_Click"/>
+                <MenuItem Header="_Datoteka" Name="Datoteka">
+                    <MenuItem Header="_Nova" Click="Handler_Click" InputGestureText="CTRL+N"/>
+                    <MenuItem Header="_Otvori..." Click="Handler_Click" InputGestureText="CTRL+O"/>
+                    <MenuItem Header="_Spremi" Click="Handler_Click" InputGestureText="CTRL+S"/>
                     <MenuItem Header="_Spremi kao..." Click="Handler_Click"/>
                     <MenuItem Header="_Postavljanje stranice..." Click="Handler_Click"/>
-                    <MenuItem Header="_Ispis..." Click="Handler_Click"/>
+                    <MenuItem Header="_Ispis..." Click="Handler_Click" InputGestureText="CTRL+P"/>
                     <MenuItem Header="_Izlaz" Click="Handler_Click"/>
                 </MenuItem>
                 
-                <MenuItem Header="_Uređivanje">
-                    <MenuItem Header="_Poništi" Click="Handler_Click"/>
-                    <MenuItem Header="_Izreži" Click="Handler_Click"/>
-                    <MenuItem Header="_Kopiraj" Click="Handler_Click"/>
-                    <MenuItem Header="_Zalijepi" Click="Handler_Click"/>
-                    <MenuItem Header="_Izbriši" Click="Handler_Click"/>
-                    <MenuItem Header="_Traži..." Click="Handler_Click"/>
-                    <MenuItem Header="_Pronađi sljedeći" Click="Handler_Click"/>
-                    <MenuItem Header="_Zamijeni..." Click="Handler_Click"/>
-                    <MenuItem Header="_Idi na..." Click="Handler_Click"/>
-                    <MenuItem Header="_Odaberi sve" Click="Handler_Click"/>
-                    <MenuItem Header="_Vrijeme/Datum" Click="Handler_Click"/>
+                <MenuItem Header="_Uređivanje" Name="Uredivanje">
+                    <MenuItem Header="_Poništi" Click="Handler_Click" InputGestureText="CTRL+Z"/>
+                    <MenuItem Header="_Izreži" Click="Handler_Click" InputGestureText="CTRL+X"/>
+                    <MenuItem Header="_Kopiraj" Click="Handler_Click" InputGestureText="CTRL+C"/>
+                    <MenuItem Header="_Zalijepi" Click="Handler_Click" InputGestureText="CTRL+V"/>
+                    <MenuItem Header="_Izbriši" Click="Handler_Click" InputGestureText="Del"/>
+                    <MenuItem Header="_Traži..." Click="Handler_Click" InputGestureText="CTRL+F"/>
+                    <MenuItem Header="_Pronađi sljedeći" Click="Handler_Click" InputGestureText="F3"/>
+                    <MenuItem Header="_Zamijeni..." Click="Handler_Click" InputGestureText="CTRL+F"/>
+                    <MenuItem Header="_Idi na..." Click="Handler_Click" InputGestureText="CTRL+G"/>
+                    <MenuItem Header="_Odaberi sve" Click="Handler_Click" InputGestureText="CTRL+A"/>
+                    <MenuItem Header="_Vrijeme/Datum" Click="Handler_Click" InputGestureText="F5"/>
                 </MenuItem>
 
-                <MenuItem Header="_Oblikovanje">
-                    <MenuItem Header="_Prelomi riječi" Click="Handler_Click"/>
+                <MenuItem Header="_Oblikovanje" Name="Oblikovanje">
+                    <MenuItem Header="_Prelomi riječi" Click="Handler_Click" IsCheckable="True"/>
                     <MenuItem Header="_Font" Click="Handler_Click"/>
                 </MenuItem>
 
-                <MenuItem Header="_Prikaz">
-                    <MenuItem Header="_Traka stanja" Click="Handler_Click"/>
+                <MenuItem Header="_Prikaz" Name="Prikaz">
+                    <MenuItem Header="_Traka stanja" Click="Handler_Click" IsCheckable="True"/>
                 </MenuItem>
 
-                <MenuItem Header="_Pomoć">
+                <MenuItem Header="_Pomoć" Name="Pomoc">
                     <MenuItem Header="_Prikaži pomoć" Click="Handler_Click"/>
                     <MenuItem Header="_O programu Notepad WPF" Click="Handler_Click"/>
                 </MenuItem>
