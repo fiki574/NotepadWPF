@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Notepad"
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="725">
-    <Grid>
-        <TextBox x:Name="TextData" HorizontalAlignment="Left" Height="82" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,18,0,0"></TextBox>
+    <Grid Name="MainGrid">
+        <TextBox x:Name="TextData" HorizontalAlignment="Left" Height="82" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="0,18,0,0" TextChanged="TextData_TextChanged" AcceptsReturn="True" SelectionChanged="TextData_SelectionChanged"/>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_Datoteka" Name="Datoteka">
@@ -40,7 +40,7 @@
                 </MenuItem>
 
                 <MenuItem Header="_Prikaz" Name="Prikaz">
-                    <MenuItem Header="_Traka stanja" Click="Handler_Click" IsCheckable="True"/>
+                    <MenuItem Header="_Traka stanja" Click="Handler_Click" IsCheckable="True" Name="TrakaStanja"/>
                 </MenuItem>
 
                 <MenuItem Header="_Pomoć" Name="Pomoc">

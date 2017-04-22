@@ -35,5 +35,13 @@ namespace Notepad
         {
             Title = title;
         }
+
+        //event handler za detektiranje kada korisnik pritisne X u gornjem desnom kutu, preusmjerava ga u standardni dijalog za spremanje promjena, ako ih ima
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //pošto pritiskom na "Odustani" korisnik želi ostati u aplikaciji, mora se sprječiti zatvaranje iste
+            MessageBoxResult res = handler.Izlaz();
+            if (res == MessageBoxResult.Cancel) e.Cancel = true;
+        }
     }
 }

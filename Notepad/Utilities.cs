@@ -14,7 +14,7 @@
 
             public void ChangeTitle(string title)
             {
-                window.ChangeTitle(title);
+                window.ChangeTitle(title + " - NotepadWPF");
             }
         }
 
@@ -31,6 +31,11 @@
             public void Resize(System.Windows.Size s)
             {
                 window.Resize(s);
+            }
+
+            public System.Windows.MessageBoxResult Izlaz()
+            {
+                return window.Izlaz();
             }
         }
 
