@@ -297,22 +297,29 @@ namespace Notepad
         //event koji je trigger-an kad god se promijeni nešto u TextBox-u
         private void TextData_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //provjera je li traka stanja uključena
-            if (TrakaStanja.IsChecked)
+            try
             {
-                //dohvati trenutni red
-                int line = TextData.GetLineIndexFromCharacterIndex(TextData.SelectionStart) + 1;
+                //provjera je li traka stanja uključena
+                if (TrakaStanja.IsChecked)
+                {
+                    //dohvati trenutni red
+                    int line = TextData.GetLineIndexFromCharacterIndex(TextData.SelectionStart) + 1;
 
-                //dohvati trenutni stupac
-                int col = TextData.GetCharacterIndexFromLineIndex(line - 1);
-                int acol = TextData.SelectionStart - col;
+                    //dohvati trenutni stupac
+                    int col = TextData.GetCharacterIndexFromLineIndex(line - 1);
+                    int acol = TextData.SelectionStart - col;
 
-                //pohrani u label
-                traka.Content = $"Rd {line}, St {acol}";
+                    //pohrani u label
+                    traka.Content = $"Rd {line}, St {acol}";
+                }
+
+                //dogodila se promjena
+                Changed = true;
             }
-
-            //dogodila se promjena
-            Changed = true;
+            catch(Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
+            }
         }
 
         //event korišten primarno kod trake stanja kako bi se detektirala promjena pozicije kursora/caret-a
@@ -328,49 +335,64 @@ namespace Notepad
 
         public void SpremiKao()
         {
-            //SaveFileDialog je pre-made klasa koja služi za browse-anje i spremanje sadržaja u datoteke
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-            //filtriranje ekstenzija koje su dopuštene za spremanje
-            saveFileDialog1.Filter = "Tekstni dokument (*.txt)|*.txt|Sve datoteke (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 1;
-            saveFileDialog1.RestoreDirectory = true;
-
-            //korisnik je prisnuo OK i time save-o datoteku
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            try
             {
-                //spremi podatke
-                File.WriteAllText(saveFileDialog1.FileName, TextData.Text);
+                //SaveFileDialog je pre-made klasa koja služi za browse-anje i spremanje sadržaja u datoteke
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-                //promjena titla u trenutno ime datoteke
-                handler.ChangeTitle(Path.GetFileNameWithoutExtension(saveFileDialog1.FileName));
+                //filtriranje ekstenzija koje su dopuštene za spremanje
+                saveFileDialog1.Filter = "Tekstni dokument (*.txt)|*.txt|Sve datoteke (*.*)|*.*";
+                saveFileDialog1.FilterIndex = 1;
+                saveFileDialog1.RestoreDirectory = true;
+
+                //korisnik je prisnuo OK i time save-o datoteku
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    //spremi podatke
+                    File.WriteAllText(saveFileDialog1.FileName, TextData.Text);
+
+                    //promjena titla u trenutno ime datoteke
+                    handler.ChangeTitle(Path.GetFileNameWithoutExtension(saveFileDialog1.FileName));
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
             }
         }
 
         public MessageBoxResult Izlaz()
         {
-            if (!Changed || string.IsNullOrWhiteSpace(TextData.Text))
+            try
             {
-                Environment.Exit(0);
-                return MessageBoxResult.None;
-            }
-            else
-            {
-                if (FullPath == null) FullPath = "Novi tekstni dokument.txt";
-
-                //prikazivanje jednostavnog dijaloga u kojem se korisnika pita želi li pospremiti promjene
-                MessageBoxResult res = System.Windows.MessageBox.Show($"Želite li spremiti promjene u '{FullPath}'?", "NotepadWPF", MessageBoxButton.YesNoCancel);
-                if (res == MessageBoxResult.Yes)
+                if (!Changed || string.IsNullOrWhiteSpace(TextData.Text))
                 {
-                    //ovisno o postojanju datoteke odabrati prikladnu metodu za spremanje
-                    if (FullPath != null) File.WriteAllText(FullPath, TextData.Text);
-                    else SpremiKao();
-
-                    //izlaz iz aplikacije
-                    Environment.Exit(1);
+                    Environment.Exit(0);
+                    return MessageBoxResult.None;
                 }
-                else if (res == MessageBoxResult.No) Environment.Exit(2); //korisnik ne želi spremiti promjene stoga samo treba izaći iz aplikacije
-                return res;
+                else
+                {
+                    if (FullPath == null) FullPath = "Novi tekstni dokument.txt";
+
+                    //prikazivanje jednostavnog dijaloga u kojem se korisnika pita želi li pospremiti promjene
+                    MessageBoxResult res = System.Windows.MessageBox.Show($"Želite li spremiti promjene u '{FullPath}'?", "NotepadWPF", MessageBoxButton.YesNoCancel);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        //ovisno o postojanju datoteke odabrati prikladnu metodu za spremanje
+                        if (FullPath != null) File.WriteAllText(FullPath, TextData.Text);
+                        else SpremiKao();
+
+                        //izlaz iz aplikacije
+                        Environment.Exit(1);
+                    }
+                    else if (res == MessageBoxResult.No) Environment.Exit(2); //korisnik ne želi spremiti promjene stoga samo treba izaći iz aplikacije
+                    return res;
+                }
+            }
+            catch (Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
+                return MessageBoxResult.None;
             }
         }
 
