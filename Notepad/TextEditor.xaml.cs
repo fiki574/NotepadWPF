@@ -8,7 +8,7 @@ using System.Text;
 namespace Notepad
 {
     /// <summary>
-    /// Klasa jednog od bezbroj mogućih UserControl layouta
+    /// Klasa UserControl layouta
     /// </summary>
     public partial class TextEditor : System.Windows.Controls.UserControl
     {
@@ -26,6 +26,7 @@ namespace Notepad
         public static int Visina = 56;
         public static int TrakaVisina = 25;
 
+        //label koji se koristi kod trake stanja
         public System.Windows.Controls.Label traka;
 
         //glavni konstruktor ovog layouta
@@ -34,7 +35,7 @@ namespace Notepad
             //core funkcija, iscrtava komponente iz danog XAML koda
             InitializeComponent();
 
-            //assign - a ovaj cijeli novokreirani objekt TextEdit - orovom handleru
+            //assign-a ovaj cijeli novokreirani objekt TextEdit-orovom handleru
             MainWindow.handler = new Utilities.TextEditorHandler(this);
 
             //ovo smanjuje layout od početnih vrijednosti kako bi ScrollBar-ovi stali u prozor
@@ -68,184 +69,230 @@ namespace Notepad
             TextData.Width = s.Width - Sirina;
             TextData.Height = s.Height - Visina;
 
-            //visina i širina glavnog prozora = visina i širina ovog layouta
+            //visina i širina ovog layouta = visina i širina glavnog prozora
             Width = s.Width;
             Height = s.Height;
         }
 
-        //glavni MenuItem_Click handler, inače bi za svaki MenuItem trebao poseban MenuItem_Click handler, ali ja sam sve stavio u jedan
-        private void Handler_Click(object sender, RoutedEventArgs e)
+        #region Click Handler-i
+
+        private void Nova_Click(object sender, RoutedEventArgs e)
         {
-            switch (Utilities.GetItem(e.Source))
+            try
             {
-                case Utilities.NotepadMenuItem.Invalid:
-                    System.Windows.MessageBox.Show("Invalid menu item!");
-                    return;
-
-                case Utilities.NotepadMenuItem.Nova:
+                if (Changed)
+                {
+                    if (FullPath == null) FullPath = "Novi tekstni dokument.txt";
+                    MessageBoxResult res = System.Windows.MessageBox.Show($"Želite li spremiti promjene u '{FullPath}'?", "NotepadWPF", MessageBoxButton.YesNoCancel);
+                    if (res == MessageBoxResult.Yes)
                     {
-                        //pozivanje custom made funkcije za kreiranje nove, prazne datoteke
-                        Nova();
-                        break;
+                        //ovisno o postojanju datoteke odabrati prikladnu metodu za spremanje
+                        if (FullPath != null) File.WriteAllText(FullPath, TextData.Text);
+                        else SpremiKao();
                     }
+                }
 
-                case Utilities.NotepadMenuItem.Otvori:
-                    {
-                        //pozivanje custom made funkcije za otvaranje datoteke
-                        Otvori();
-                        break;
-                    }
+                //basic kreiranje prazne datoteke sa generic nazivom
+                FullPath = System.Windows.Forms.Application.StartupPath + "\\Novi tekstni dokument.txt";
+                File.Create(FullPath);
 
-                case Utilities.NotepadMenuItem.Spremi:
-                    {
-                        //pokušaj spremiti datoteku ako postoji, ako ne napravi novu i spremi podatke
-                        if (FullPath == null) SpremiKao();
-                        else File.WriteAllText(FullPath, TextData.Text);
-                        break;
-                    }
+                //pobrisat prijašnje podatke
+                TextData.Text = null;
 
-                case Utilities.NotepadMenuItem.SpremiKao:
-                    {
-                        //pozivanje custom funkcije za spremanje datoteke
-                        SpremiKao();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Postavljanje: //TODO: dizajn layout-a
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Ispis: //TODO: dizajn layout-a
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Izlaz:
-                    {
-                        //ako nema promjena izađi iz aplikacije, ako ima spremi promjene
-                        Izlaz();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Ponisti:
-                    {
-                        //poništi prijašnju akciju
-                        TextData.Undo();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Izrezi:
-                    {
-                        //izrezivanje odabranog teksta
-                        TextData.Cut();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Kopiraj:
-                    {
-                        //kopiranje odabranog teksta
-                        TextData.Copy();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Zalijepi:
-                    {
-                        //paste-anje iz clipboard-a
-                        TextData.Paste();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Izbrisi:
-                    {
-                        //izbriši odabran/highlight-an dio teksta (ako takav postoji)
-                        if (!string.IsNullOrWhiteSpace(TextData.Text) && !string.IsNullOrWhiteSpace(TextData.SelectedText)) TextData.Text = TextData.Text.Replace(TextData.SelectedText, null);
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Trazi: //TODO: dizajn layout-a
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.PronadiSljedeci: //TODO: zahtjeva "Trazi" layout
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Zamijeni: //TODO: dizajn layout-a
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.IdiNa: //TODO: dizajn layout-a
-                    {
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.OdaberiSve:
-                    {
-                        //odabir svega
-                        TextData.SelectAll();
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.VrijemeDatum:
-                    {
-                        //nalijepi datum na postojeći tekst
-                        TextData.Text += DateTime.Now.Hour + ":" + DateTime.Now.Minute + " " + DateTime.Now.Day + "." + DateTime.Now.Month + "." + DateTime.Now.Year;
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.PrelomiRijeci:
-                    {
-                        //jednostavno mijenjanje prijeloma riječi
-                        if (TextData.TextWrapping == TextWrapping.NoWrap) TextData.TextWrapping = TextWrapping.Wrap;
-                        else TextData.TextWrapping = TextWrapping.NoWrap;
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.Font:
-                    {
-                        //TODO: dizajn layout-a
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.TrakaStanja:
-                    {
-                        //mora se promijenit visina layout-a kako bi traka stanja stala, isto tako treba programatski dodati label-e koji se koriste
-                        if (TrakaStanja.IsChecked)
-                        {
-                            Visina += TrakaVisina;
-                            TextData.Height -= TrakaVisina;
-                            traka.Content = "Rd 0, St 0";
-                            TextData_TextChanged(sender, null);
-                            MainGrid.Children.Add(traka);
-                        }
-                        else
-                        {
-                            Visina -= TrakaVisina;
-                            TextData.Height += TrakaVisina;
-                            MainGrid.Children.Remove(traka);
-                        }
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.PrikaziPomoc:
-                    {
-                        //otvori Wiki stranicu na GitHub-u za pomoć u default browser-u
-                        System.Diagnostics.Process.Start("https://github.com/fiki574/NotepadWPF/wiki");
-                        break;
-                    }
-
-                case Utilities.NotepadMenuItem.OProgramu:
-                    {
-                        //otvori main page na GitHub-u u default browser-u
-                        System.Diagnostics.Process.Start("https://github.com/fiki574/NotepadWPF");
-                        break;
-                    }
+                //promjena titla u trenutno ime datoteke
+                handler.ChangeTitle(Path.GetFileNameWithoutExtension(FullPath));
+            }
+            catch(Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
             }
         }
+
+        private void Otvori_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //OpenFileDialog je pre-made klasa koja služi za browse-anje i odabir datoteke koja se želi prikazat
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+                //postavljanje direktorija od kojeg će browse-anje krenut
+                if (FullPath == null) openFileDialog1.InitialDirectory = System.Windows.Forms.Application.StartupPath;
+                else openFileDialog1.InitialDirectory = FullPath;
+
+                //filtriranje ekstenzija koje su dopuštene za učitavanje
+                openFileDialog1.Filter = "Tekstni dokument (*.txt)|*.txt|Sve datoteke (*.*)|*.*";
+                openFileDialog1.FilterIndex = 1;
+                openFileDialog1.RestoreDirectory = true;
+
+                //korisnik je pritisnuo OK, složivši se sa otvaranjem izabrane datoteke
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    //pohranjivanje putanje
+                    FullPath = openFileDialog1.FileName;
+
+                    //učitavanje datoteke
+                    TextData.Text = File.ReadAllText(FullPath, Encoding.Default);
+
+                    //promjena titla u trenutno ime datoteke
+                    handler.ChangeTitle(Path.GetFileNameWithoutExtension(FullPath));
+
+                    //pošto je TextData_TextChanged event poslan, ali još nije došlo do promjene datoteke, vraćanje na default-nu vrijedost
+                    Changed = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
+            }
+        }
+
+        private void Spremi_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (FullPath == null) SpremiKao();
+                else
+                {
+                    File.WriteAllText(FullPath, TextData.Text);
+                    Changed = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                Utilities.CreateExceptionFile(ex);
+            }
+        }
+
+        private void SpremiKao_Click(object sender, RoutedEventArgs e)
+        {
+            SpremiKao();
+        }
+
+        private void Postavljanje_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void Ispis_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void Izlaz_Click(object sender, RoutedEventArgs e)
+        {
+            //ako nema promjena izađi iz aplikacije, ako ima spremi promjene
+            Izlaz();
+        }
+
+        private void Ponisti_Click(object sender, RoutedEventArgs e)
+        {
+            //poništi prijašnju akciju
+            TextData.Undo();
+        }
+
+        private void Izrezi_Click(object sender, RoutedEventArgs e)
+        {
+            //izrezivanje odabranog teksta
+            TextData.Cut();
+        }
+
+        private void Kopiraj_Click(object sender, RoutedEventArgs e)
+        {
+            //kopiranje odabranog teksta
+            TextData.Copy();
+        }
+
+        private void Zalijepi_Click(object sender, RoutedEventArgs e)
+        {
+            //paste-anje iz clipboard-a
+            TextData.Paste();
+        }
+
+        private void Izbrisi_Click(object sender, RoutedEventArgs e)
+        {
+            //izbriši odabran/highlight-an dio teksta (ako takav postoji)
+            if (!string.IsNullOrWhiteSpace(TextData.Text) && !string.IsNullOrWhiteSpace(TextData.SelectedText))
+                TextData.Text = TextData.Text.Replace(TextData.SelectedText, null);
+        }
+
+        private void Trazi_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void PronadiSljedeci_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: zahtjeva "Trazi" layout
+        }
+
+        private void Zamijeni_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void IdiNa_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void OdaberiSve_Click(object sender, RoutedEventArgs e)
+        {
+            //odabir svega
+            TextData.SelectAll();
+        }
+
+        private void VrijemeDatum_Click(object sender, RoutedEventArgs e)
+        {
+            //nalijepi datum na postojeći tekst od trenutne pozicije caret-a
+            TextData.Text += DateTime.Now.Hour + ":" + DateTime.Now.Minute + " " + DateTime.Now.Day + "." + DateTime.Now.Month + "." + DateTime.Now.Year;
+        }
+
+        private void PrelomiRijeci_Click(object sender, RoutedEventArgs e)
+        {
+            //jednostavno mijenjanje prijeloma riječi, čak se ne treba IsChecked koristit
+            if (TextData.TextWrapping == TextWrapping.NoWrap) TextData.TextWrapping = TextWrapping.Wrap;
+            else TextData.TextWrapping = TextWrapping.NoWrap;
+        }
+
+        private void Font_Click(object sender, RoutedEventArgs e)
+        {
+            //TODO: dizajn layout-a
+        }
+
+        private void TrakaStanja_Click(object sender, RoutedEventArgs e)
+        {
+            //mora se promijenit visina layout-a kako bi traka stanja stala, isto tako treba programatski dodati label-e koji se koriste
+            if (TrakaStanja.IsChecked)
+            {
+                Visina += TrakaVisina;
+                TextData.Height -= TrakaVisina;
+                traka.Content = "Rd 0, St 0";
+                TextData_TextChanged(sender, null);
+                MainGrid.Children.Add(traka);
+            }
+            else
+            {
+                Visina -= TrakaVisina;
+                TextData.Height += TrakaVisina;
+                MainGrid.Children.Remove(traka);
+            }
+        }
+
+        private void PrikaziPomoc_Click(object sender, RoutedEventArgs e)
+        {
+            //otvori Wiki stranicu na GitHub-u za pomoć u default browser-u
+            System.Diagnostics.Process.Start("https://github.com/fiki574/NotepadWPF/wiki");
+        }
+
+        private void OProgramu_Click(object sender, RoutedEventArgs e)
+        {
+            //otvori main page na GitHub-u u default browser-u
+            System.Diagnostics.Process.Start("https://github.com/fiki574/NotepadWPF");
+        }
+
+        #endregion
+
+        #region Ostali Handler-i
 
         //event koji je trigger-an kad god se promijeni nešto u TextBox-u
         private void TextData_TextChanged(object sender, TextChangedEventArgs e)
@@ -263,56 +310,21 @@ namespace Notepad
                 //pohrani u label
                 traka.Content = $"Rd {line}, St {acol}";
             }
+
+            //dogodila se promjena
             Changed = true;
         }
 
-        //event korišten primarno kod trake stanja kako bi se detektirala promjena pozicije kursora
+        //event korišten primarno kod trake stanja kako bi se detektirala promjena pozicije kursora/caret-a
         private void TextData_SelectionChanged(object sender, RoutedEventArgs e)
         {
             //najjednostavnije je samo pozvat već postojeći event koji radi identičnu stvar
             TextData_TextChanged(sender, null);
         }
 
-        public void Nova()
-        {
-            //basic kreiranje prazne datoteke sa generic nazivom
-            FullPath = System.Windows.Forms.Application.StartupPath + "\\Novi tekstni dokument.txt";
-            File.Create(FullPath);
+        #endregion
 
-            //promjena titla u trenutno ime datoteke
-            handler.ChangeTitle(Path.GetFileNameWithoutExtension(FullPath));
-        }
-
-        public void Otvori()
-        {
-            //OpenFileDialog je pre-made klasa koja služi za browse-anje i odabir datoteke koja se želi prikazat
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-            //postavljanje direktorija od kojeg će browse-anje krenut
-            if (FullPath == null) openFileDialog1.InitialDirectory = System.Windows.Forms.Application.StartupPath;
-            else openFileDialog1.InitialDirectory = FullPath;
-
-            //filtriranje ekstenzija koje su dopuštene za učitavanje
-            openFileDialog1.Filter = "Tekstni dokument (*.txt)|*.txt|Sve datoteke (*.*)|*.*";
-            openFileDialog1.FilterIndex = 1;
-            openFileDialog1.RestoreDirectory = true;
-
-            //korisnik je pritisnuo OK, složivši se sa otvaranjem izabrane datoteke
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                //pohranjivanje putanje
-                FullPath = openFileDialog1.FileName;
-
-                //učitavanje datoteke
-                TextData.Text = File.ReadAllText(FullPath, Encoding.Default);
-
-                //promjena titla u trenutno ime datoteke
-                handler.ChangeTitle(Path.GetFileNameWithoutExtension(FullPath));
-
-                //pošto je TextData_TextChanged event poslan, ali još nije došlo do promjene datoteke, vraćanje na default-nu vrijedost
-                Changed = false;
-            }
-        }
+        #region Funkcije
 
         public void SpremiKao()
         {
@@ -361,5 +373,7 @@ namespace Notepad
                 return res;
             }
         }
+
+        #endregion
     }
 }
