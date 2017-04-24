@@ -41,6 +41,11 @@ namespace Notepad
             {
                 return window.Izlaz();
             }
+
+            public void Shortcut(string s)
+            {
+                window.Shortcut(s);
+            }
         }
 
         //funkcija koja kreira datoteke koje sadržavaju informacije o Exception-ima

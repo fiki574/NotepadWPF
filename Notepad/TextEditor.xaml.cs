@@ -62,6 +62,8 @@ namespace Notepad
             traka.Content = "Rd 0, St 0";
         }
 
+        #region Metode koje poziva handler
+
         //funckija koja automatski resize-a TextBox kako bi zauzeo širinu i visinu prikladno širini i visini glavnog prozora
         public void Resize(Size s)
         {
@@ -73,6 +75,28 @@ namespace Notepad
             Width = s.Width;
             Height = s.Height;
         }
+
+        //javna methoda koja je pozvana od strane MainWindow-a i koja poziva event handler-e ovisno o pritisnutom shortcut-u
+        public void Shortcut(string s)
+        {
+            if (s == "Nova") Nova_Click(this, null); //problem: doda slovo 'n' na prvo mjesto u tekstu zbog zakašnjelog input-a
+            else if (s == "Otvori") Otvori_Click(this, null); //problem: doda slovo 'o' na prvo mjesto u tekstu zbog zakašnjelog input-a
+            else if (s == "Spremi") Spremi_Click(this, null);
+            else if (s == "Ispis") Ispis_Click(this, null);
+            else if (s == "Ponisti") Ponisti_Click(this, null);
+            else if (s == "Izrezi") Izrezi_Click(this, null);
+            else if (s == "Kopiraj") Kopiraj_Click(this, null);
+            else if (s == "Zalijepi") Zalijepi_Click(this, null);
+            else if (s == "Trazi") Trazi_Click(this, null);
+            else if (s == "Zamijeni") Zamijeni_Click(this, null);
+            else if (s == "IdiNa") IdiNa_Click(this, null);
+            else if (s == "OdaberiSve") OdaberiSve_Click(this, null);
+            else if (s == "PronadiSljedeci") PronadiSljedeci_Click(this, null);
+            else if (s == "Izbrisi") Izbrisi_Click(this, null);
+            else if (s == "VrijemeDatum") VrijemeDatum_Click(this, null);
+        }
+
+        #endregion
 
         #region Click Handler-i
 
@@ -102,7 +126,7 @@ namespace Notepad
                 //promjena titla u trenutno ime datoteke
                 handler.ChangeTitle(Path.GetFileNameWithoutExtension(FullPath));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utilities.CreateExceptionFile(ex);
             }
@@ -140,7 +164,7 @@ namespace Notepad
                     Changed = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utilities.CreateExceptionFile(ex);
             }
@@ -157,7 +181,7 @@ namespace Notepad
                     Changed = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utilities.CreateExceptionFile(ex);
             }
@@ -316,7 +340,7 @@ namespace Notepad
                 //dogodila se promjena
                 Changed = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Utilities.CreateExceptionFile(ex);
             }
@@ -353,6 +377,8 @@ namespace Notepad
 
                     //promjena titla u trenutno ime datoteke
                     handler.ChangeTitle(Path.GetFileNameWithoutExtension(saveFileDialog1.FileName));
+
+                    FullPath = saveFileDialog1.FileName;
                 }
             }
             catch (Exception ex)
@@ -397,5 +423,6 @@ namespace Notepad
         }
 
         #endregion
+
     }
 }

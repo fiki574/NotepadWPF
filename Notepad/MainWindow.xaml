@@ -10,5 +10,6 @@
         Height="550" 
         Width="725" 
         SizeChanged="TextData_SizeChanged"
-        Closing="Window_Closing">
+        Closing="Window_Closing"
+        KeyDown="Window_KeyDown">
 </Window>
