@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Notepad.Forme.Zamijeni"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Notepad.Forme"
+             mc:Ignorable="d" Height="145.62" Width="410.584">
+    <Grid Margin="0,0,0,10">
+        <Label x:Name="label" Content="Traži ovo: " HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label1" Content="Zamijeni sa: " HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="TraziOvo" HorizontalAlignment="Left" Height="23" Margin="93,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="217"/>
+        <TextBox x:Name="ZamijeniSa" HorizontalAlignment="Left" Height="23" Margin="93,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="217"/>
+        <Button x:Name="TraziSljedece" Content="Traži sljedeće" HorizontalAlignment="Left" Margin="315,4,0,0" VerticalAlignment="Top" Width="85" Click="TraziSljedece_Click"/>
+        <Button x:Name="ZamijeniButton" Content="Zamijeni" HorizontalAlignment="Left" Margin="315,31,0,0" VerticalAlignment="Top" Width="85" Click="ZamijeniButton_Click"/>
+        <Button x:Name="ZamjeniSve" Content="Zamijeni sve" HorizontalAlignment="Left" Margin="315,56,0,0" VerticalAlignment="Top" Width="85" Click="ZamjeniSve_Click"/>
+        <Button x:Name="Odustani" Content="Odustani" HorizontalAlignment="Left" Margin="224,56,0,0" VerticalAlignment="Top" Width="85" Click="Odustani_Click"/>
+        <CheckBox x:Name="CaseSensitive" Content="Razlikuj velika i mala slova" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,60,0,0"/>
+
+    </Grid>
+</UserControl>

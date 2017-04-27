@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.IO;
 using System.Text;
+using Notepad.Forme;
 
 namespace Notepad
 {
@@ -37,6 +38,9 @@ namespace Notepad
 
             //assign-a ovaj cijeli novokreirani objekt TextEdit-orovom handleru
             MainWindow.handler = new Utilities.TextEditorHandler(this);
+            IdiNa.thandler = new Utilities.TextEditorHandler(this);
+            Trazi.thandler = new Utilities.TextEditorHandler(this);
+            Zamijeni.thandler = new Utilities.TextEditorHandler(this);
 
             //ovo smanjuje layout od početnih vrijednosti kako bi ScrollBar-ovi stali u prozor
             TextData.Width = 712;
@@ -77,10 +81,11 @@ namespace Notepad
         }
 
         //javna methoda koja je pozvana od strane MainWindow-a i koja poziva event handler-e ovisno o pritisnutom shortcut-u
+        //BUG: negdje dodaje slovo od shortcuta na prvo mjesto u tekstu zbog zakašnjelog input-a (RJ: boolean-ovi)
         public void Shortcut(string s)
         {
-            if (s == "Nova") Nova_Click(this, null); //problem: doda slovo 'n' na prvo mjesto u tekstu zbog zakašnjelog input-a
-            else if (s == "Otvori") Otvori_Click(this, null); //problem: doda slovo 'o' na prvo mjesto u tekstu zbog zakašnjelog input-a
+            if (s == "Nova") Nova_Click(this, null); 
+            else if (s == "Otvori") Otvori_Click(this, null);
             else if (s == "Spremi") Spremi_Click(this, null);
             else if (s == "Ispis") Ispis_Click(this, null);
             else if (s == "Ponisti") Ponisti_Click(this, null);
@@ -94,6 +99,24 @@ namespace Notepad
             else if (s == "PronadiSljedeci") PronadiSljedeci_Click(this, null);
             else if (s == "Izbrisi") Izbrisi_Click(this, null);
             else if (s == "VrijemeDatum") VrijemeDatum_Click(this, null);
+        }
+
+        //BUG: ako je DynamicWindow u fokusu, pritisak na "Traži sljedeće" će radit ispravno, ALI neće highlight-a pojave teksta (TEMP.RJ.: koristiti F3)
+        public bool FindAndSelect(string search, bool casesensitive, bool down)
+        {
+            int index;
+            var eStringComparison = casesensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
+            if (down) index = TextData.Text.IndexOf(search, TextData.SelectionStart + TextData.SelectionLength, eStringComparison);
+            else index = TextData.Text.LastIndexOf(search, TextData.SelectionStart, TextData.SelectionStart, eStringComparison);
+            if (index == -1) return false;
+
+            Trazi.LastSearch = search;
+            Trazi.LastCaseSensitive = casesensitive;
+            Trazi.LastDown = down;
+
+            TextData.SelectionStart = index;
+            TextData.SelectionLength = search.Length;
+            return true;
         }
 
         #endregion
@@ -241,22 +264,36 @@ namespace Notepad
 
         private void Trazi_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //učitaj pravi layout za dinamički prozor
+            DynamicWindow window = new DynamicWindow(new Trazi(), "Traži", 400, 125);
+
+            //pokaži prozor
+            window.Show();
         }
 
         private void PronadiSljedeci_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: zahtjeva "Trazi" layout
+            if (!string.IsNullOrWhiteSpace(Trazi.LastSearch))
+                if (!FindAndSelect(Trazi.LastSearch, Trazi.LastCaseSensitive, Trazi.LastDown))
+                    System.Windows.MessageBox.Show("Nije moguće pronaći \"" + Trazi.LastSearch + "\"", "Blok za pisanje", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void Zamijeni_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //učitaj pravi layout za dinamički prozor
+            DynamicWindow window = new DynamicWindow(new Zamijeni(), "Zamjena", 450, 125);
+
+            //pokaži prozor
+            window.ShowDialog();
         }
 
         private void IdiNa_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //učitaj pravi layout za dinamički prozor
+            DynamicWindow window = new DynamicWindow(new IdiNa(), "Idi na redak", 300, 125);
+
+            //pokaži prozor
+            window.ShowDialog();
         }
 
         private void OdaberiSve_Click(object sender, RoutedEventArgs e)

@@ -29,7 +29,7 @@
                     <MenuItem Header="_Izbriši" Click="Izbrisi_Click" InputGestureText="Del"/>
                     <MenuItem Header="_Traži..." Click="Trazi_Click" InputGestureText="CTRL+F"/>
                     <MenuItem Header="_Pronađi sljedeći" Click="PronadiSljedeci_Click" InputGestureText="F3"/>
-                    <MenuItem Header="_Zamijeni..." Click="Zamijeni_Click" InputGestureText="CTRL+F"/>
+                    <MenuItem Header="_Zamijeni..." Click="Zamijeni_Click" InputGestureText="CTRL+H"/>
                     <MenuItem Header="_Idi na..." Click="IdiNa_Click" InputGestureText="CTRL+G"/>
                     <MenuItem Header="_Odaberi sve" Click="OdaberiSve_Click" InputGestureText="CTRL+A"/>
                     <MenuItem Header="_Vrijeme/Datum" Click="VrijemeDatum_Click" InputGestureText="F5"/>

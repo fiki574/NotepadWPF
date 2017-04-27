@@ -46,10 +46,46 @@ namespace Notepad
             {
                 window.Shortcut(s);
             }
+
+            public void GoToRow(int row)
+            {
+                int newlinecount = 0, charcount = 0;
+                foreach(char c in window.TextData.Text)
+                {
+                    if (c == '\n') newlinecount++;
+                    if(row - 1 == newlinecount)
+                    {
+                        window.TextData.SelectionStart = charcount + 1;
+                        break;
+                    }
+                    charcount++;
+                }
+            }
+
+            public bool FindAndSelect(string search, bool casesensitive, bool down)
+            {
+                return window.FindAndSelect(search, casesensitive, down);
+            }
         }
 
-        //funkcija koja kreira datoteke koje sadržavaju informacije o Exception-ima
-        public static void CreateExceptionFile(Exception ex)
+        //Handler za dinamički prozor korišten u ostalim formama
+        public class DynamicWindowHandler
+        {
+            private DynamicWindow window;
+
+            public DynamicWindowHandler(DynamicWindow window)
+            {
+                this.window = window;
+            }
+
+            public void Close()
+            {
+                window.Close();
+            }
+        }
+
+            //funkcija koja kreira datoteke koje sadržavaju informacije o Exception-ima
+            public static void CreateExceptionFile(Exception ex)
         {
             try
             {

@@ -57,10 +57,38 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Forme\DynamicWindow.xaml.cs">
+      <DependentUpon>DynamicWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forme\IdiNa.xaml.cs">
+      <DependentUpon>IdiNa.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forme\Trazi.xaml.cs">
+      <DependentUpon>Trazi.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Forme\Zamijeni.xaml.cs">
+      <DependentUpon>Zamijeni.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TextEditor.xaml.cs">
       <DependentUpon>TextEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities.cs" />
+    <Page Include="Forme\DynamicWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forme\IdiNa.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forme\Trazi.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Forme\Zamijeni.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
