@@ -30,6 +30,9 @@ namespace Notepad
         //label koji se koristi kod trake stanja
         public System.Windows.Controls.Label traka;
 
+        //Idi na, Otvori i Nova: shortcut-i ovih funkcija dodaju zadnje slovo shortcut-a u text box
+        public bool[] fixes = new bool[3] { false, false, false };
+
         //glavni konstruktor ovog layouta
         public TextEditor()
         {
@@ -84,8 +87,17 @@ namespace Notepad
         //BUG: negdje dodaje slovo od shortcuta na prvo mjesto u tekstu zbog zakašnjelog input-a (RJ: boolean-ovi)
         public void Shortcut(string s)
         {
-            if (s == "Nova") Nova_Click(this, null); 
-            else if (s == "Otvori") Otvori_Click(this, null);
+            if (s == "Nova")
+            {
+                fixes[0] = true;
+                Nova_Click(this, null);
+               
+            }
+            else if (s == "Otvori")
+            {
+                fixes[1] = true;
+                Otvori_Click(this, null);
+            }
             else if (s == "Spremi") Spremi_Click(this, null);
             else if (s == "Ispis") Ispis_Click(this, null);
             else if (s == "Ponisti") Ponisti_Click(this, null);
@@ -94,7 +106,11 @@ namespace Notepad
             else if (s == "Zalijepi") Zalijepi_Click(this, null);
             else if (s == "Trazi") Trazi_Click(this, null);
             else if (s == "Zamijeni") Zamijeni_Click(this, null);
-            else if (s == "IdiNa") IdiNa_Click(this, null);
+            else if (s == "IdiNa")
+            {
+                fixes[2] = true;
+                IdiNa_Click(this, null);
+            }
             else if (s == "OdaberiSve") OdaberiSve_Click(this, null);
             else if (s == "PronadiSljedeci") PronadiSljedeci_Click(this, null);
             else if (s == "Izbrisi") Izbrisi_Click(this, null);
@@ -137,13 +153,14 @@ namespace Notepad
                         if (FullPath != null) File.WriteAllText(FullPath, TextData.Text);
                         else SpremiKao();
                     }
+                    else if (res == MessageBoxResult.Cancel) return;
                 }
 
                 //basic kreiranje prazne datoteke sa generic nazivom
                 FullPath = System.Windows.Forms.Application.StartupPath + "\\Novi tekstni dokument.txt";
                 File.Create(FullPath);
 
-                //pobrisat prijašnje podatke
+                //pobrisati prijašnje podatke
                 TextData.Text = null;
 
                 //promjena titla u trenutno ime datoteke
@@ -274,8 +291,11 @@ namespace Notepad
         private void PronadiSljedeci_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(Trazi.LastSearch))
+            {
                 if (!FindAndSelect(Trazi.LastSearch, Trazi.LastCaseSensitive, Trazi.LastDown))
                     System.Windows.MessageBox.Show("Nije moguće pronaći \"" + Trazi.LastSearch + "\"", "Blok za pisanje", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else Trazi_Click(sender, e);
         }
 
         private void Zamijeni_Click(object sender, RoutedEventArgs e)
@@ -284,7 +304,7 @@ namespace Notepad
             DynamicWindow window = new DynamicWindow(new Zamijeni(), "Zamjena", 450, 125);
 
             //pokaži prozor
-            window.ShowDialog();
+            window.Show();
         }
 
         private void IdiNa_Click(object sender, RoutedEventArgs e)
@@ -386,8 +406,21 @@ namespace Notepad
         //event korišten primarno kod trake stanja kako bi se detektirala promjena pozicije kursora/caret-a
         private void TextData_SelectionChanged(object sender, RoutedEventArgs e)
         {
+            //popravak problema gdje bi korištenje određenih shortcut-a dodalo slovo u text box
+            for(int i = 0; i < 3; i++)
+            {
+                if (fixes[i])
+                {
+                    fixes[i] = false;
+                    int position = TextData.SelectionStart - 1;
+                    TextData.Text = TextData.Text.Remove(position);
+                    TextData.SelectionStart = position;
+                }
+            }
+
             //najjednostavnije je samo pozvat već postojeći event koji radi identičnu stvar
-            TextData_TextChanged(sender, null);
+            if(TrakaStanja.IsChecked)
+                TextData_TextChanged(sender, null);
         }
 
         #endregion

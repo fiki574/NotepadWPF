@@ -50,10 +50,10 @@ namespace Notepad
             public void GoToRow(int row)
             {
                 int newlinecount = 0, charcount = 0;
-                foreach(char c in window.TextData.Text)
+                foreach (char c in window.TextData.Text)
                 {
                     if (c == '\n') newlinecount++;
-                    if(row - 1 == newlinecount)
+                    if (row - 1 == newlinecount)
                     {
                         window.TextData.SelectionStart = charcount + 1;
                         break;
@@ -65,6 +65,17 @@ namespace Notepad
             public bool FindAndSelect(string search, bool casesensitive, bool down)
             {
                 return window.FindAndSelect(search, casesensitive, down);
+            }
+
+            public void ReplaceString(string search, string replace)
+            {
+                if (window.TextData.SelectedText == search)
+                    window.TextData.SelectedText = replace;
+            }
+
+            public void ReplaceAll(string search, string replace)
+            {
+                window.TextData.Text = window.TextData.Text.Replace(search, replace);
             }
         }
 
@@ -84,8 +95,8 @@ namespace Notepad
             }
         }
 
-            //funkcija koja kreira datoteke koje sadržavaju informacije o Exception-ima
-            public static void CreateExceptionFile(Exception ex)
+        //funkcija koja kreira datoteke koje sadržavaju informacije o Exception-ima
+        public static void CreateExceptionFile(Exception ex)
         {
             try
             {

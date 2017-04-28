@@ -37,7 +37,7 @@ namespace Notepad.Forme
         private void TraziSljedece_Click(object sender, RoutedEventArgs e)
         {
             if(!string.IsNullOrWhiteSpace(textBox.Text))
-                if (!thandler.FindAndSelect(textBox.Text, CaseSensitive.IsChecked == true ? true : false, Gore.IsChecked == true == false ? true : false))
+                if (!thandler.FindAndSelect(textBox.Text, CaseSensitive.IsChecked == true ? true : false, Gore.IsChecked == true ? false : true))
                     MessageBox.Show("Nije moguće pronaći \"" + textBox.Text + "\"", "Blok za pisanje", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 

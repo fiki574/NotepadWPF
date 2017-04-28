@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Notepad.Forme
 {
@@ -39,19 +27,26 @@ namespace Notepad.Forme
             handler.Close();
         }
 
+        //event koji poziva funkciju putem handler-a koja traži i označava pojave unesenog stringa
         private void TraziSljedece_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            if (!string.IsNullOrWhiteSpace(TraziOvo.Text))
+                if (!thandler.FindAndSelect(TraziOvo.Text, CaseSensitive.IsChecked == true ? true : false, true))
+                    MessageBox.Show("Nije moguće pronaći \"" + TraziOvo.Text + "\"", "Blok za pisanje", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        //event koji zamjenjue trenutno odabran string
         private void ZamijeniButton_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            if (!string.IsNullOrWhiteSpace(TraziOvo.Text))
+                thandler.ReplaceString(TraziOvo.Text, ZamijeniSa.Text);
         }
 
+        //event koji zamjenjue apsolutno sve pojave odabranoh string-a
         private void ZamjeniSve_Click(object sender, RoutedEventArgs e)
         {
-            //TODO
+            if (!string.IsNullOrWhiteSpace(TraziOvo.Text))
+                thandler.ReplaceAll(TraziOvo.Text, ZamijeniSa.Text);
         }
     }
 }
