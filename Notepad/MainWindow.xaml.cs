@@ -1,7 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using FDB;
-using System.Collections.Generic;
 
 namespace Notepad
 {
@@ -12,12 +10,6 @@ namespace Notepad
     {
         //handler isključivo mora biti public static kako bi mu se pristupilo iz svakog dijela aplikacije
         public static Utilities.TextEditorHandler handler;
-
-        //varijabla za pohranjivanje spremljenih postavki Notepad-a
-        public static Settings postavke;
-
-        //file baza podataka
-        public static FDB.FDB baza;
 
         //ovo sam koristio umjesto KeyBinding-ove kompleksnosti implementiranja prečaca na tipkovnici
         int count = 0;
@@ -34,47 +26,6 @@ namespace Notepad
 
             //postavljanje sadržaja glavnog prozora
             Content = new TextEditor();
-
-            //kod vezan za bazu podataka
-            try
-            {
-                baza = new FDB.FDB("postavke");
-                //NAPOMENA: maknut komentare samo na kada se želi dodati novi file
-                /*baza.AddFile("", (int)Files.Postavke);
-                baza.Pack();
-                System.Environment.Exit(3);
-                return;*/
-                FDBFile file = baza.GetFiles().Find(f => f.ID == (int)Files.Postavke);
-                if (file.Data.Length == 0)
-                {
-                    postavke = new Settings();
-                    postavke.PrijelomiRijeci = false;
-                    postavke.TrakaStanja = false;
-                    postavke.FontImeIndex = 7;
-                    postavke.FontStilIndex = 1;
-                    postavke.FontVeličinaIndex = 4;
-                    postavke.FontSkriptIndex = 2;
-                    postavke.StranicaVeličinaIndex = 2;
-                    postavke.StranicaUsmjerenjeGore = true;
-                    postavke.StranicaMarginaLijevo = 20;
-                    postavke.StranicaMarginaDesno = 20;
-                    postavke.StranicaMarginaGore = 25;
-                    postavke.StranicaMarginaDolje = 25;
-                    postavke.StranicaZaglavlje = "&d";
-                    postavke.StranicaPodnožje = "Stranica &p";
-                    file = baza.GetFiles().Find(f => f.ID == (int)Files.Postavke);
-                    List<Settings> entries = new List<Settings>();
-                    entries.Add(postavke);
-                    FDBFileWriter<Settings>.Write(entries, ref file);
-                    baza.UpdateFile(baza.GetFileIndex((int)Files.Postavke), ref file);
-                    baza.Pack();
-                }
-                else postavke = FDBFileReader<Settings>.Read(ref file)[0];
-            }
-            catch
-            {
-                MessageBox.Show("Problem sa FDB-om!");
-            }
         }
 
         //event koji se poziva kada se mijenja visina i/ili širina glavnog prozora

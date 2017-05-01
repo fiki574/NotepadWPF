@@ -60,6 +60,7 @@ namespace Notepad
             //postavljanje varijabli na default vrijednosti
             FullPath = null;
             Changed = false;
+            TextData.FontFamily = new System.Windows.Media.FontFamily("Consolas");
 
             //programatsko kreiranje trake stanja
             traka = new System.Windows.Controls.Label();
@@ -72,7 +73,7 @@ namespace Notepad
         #region Metode koje poziva handler
 
         //funckija koja automatski resize-a TextBox kako bi zauzeo širinu i visinu prikladno širini i visini glavnog prozora
-        public void Resize(Size s)
+        public void Resize(System.Windows.Size s)
         {
             //TextBox smanjujemo za određene vrijednosti kako bi layout stali u prozor
             TextData.Width = s.Width - Sirina;
@@ -239,7 +240,12 @@ namespace Notepad
 
         private void Ispis_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //pre-made forma napravljena za WPF projekte
+            System.Windows.Controls.PrintDialog pd = new System.Windows.Controls.PrintDialog();
+
+            //pokaži formu i printaj ako je "Ispis" pritisnut
+            bool? show = pd.ShowDialog();
+            if(show == true) pd.PrintVisual(TextData, "Printanje...");
         }
 
         private void Izlaz_Click(object sender, RoutedEventArgs e)
@@ -337,7 +343,23 @@ namespace Notepad
 
         private void Font_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //font dialog i njegove postavke
+            FontDialog fd = new FontDialog();
+
+            //promjena skripta
+            fd.AllowScriptChange = true;
+
+            //pokaže uzorak fonta
+            fd.AllowSimulations = true;
+
+            //postavljanje fonta text box-a
+            if(fd.ShowDialog() == DialogResult.OK)
+            {
+                TextData.FontFamily = new System.Windows.Media.FontFamily(fd.Font.Name);
+                TextData.FontSize = fd.Font.Size * 96.0 / 72.0;
+                TextData.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
+                TextData.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
+            }
         }
 
         private void TrakaStanja_Click(object sender, RoutedEventArgs e)
