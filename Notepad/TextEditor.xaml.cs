@@ -36,9 +36,6 @@ namespace Notepad
         //Idi na, Otvori i Nova: shortcut-i ovih funkcija dodaju zadnje slovo shortcut-a u text box
         public bool[] fixes = new bool[3] { false, false, false };
 
-        //postavke stranice
-        public PageSettings PageSettings;
-
         //varijable vezane uz file bazu podataka
         public FDB Baza;
         public Settings Postavke;
@@ -61,9 +58,6 @@ namespace Notepad
                 TextData.FontSize = Postavke.FontSize;
                 TextData.FontWeight = Postavke.FontWeight ? FontWeights.Bold : FontWeights.Regular;
                 TextData.FontStyle = Postavke.FontWeight ? FontStyles.Italic : FontStyles.Normal;
-                PageSettings = new PageSettings();
-                PageSettings.Color = Postavke.PageSettingsColor;
-                PageSettings.Landscape = Postavke.PageSettingsLandscape;
             }
             catch
             {
@@ -288,13 +282,13 @@ namespace Notepad
             PageSetupDialog psd = new PageSetupDialog();
 
             //ovo je potrebno inače je bačen "NullPointerException"
-            psd.PageSettings = PageSettings;
+            psd.PageSettings = new PageSettings();
+            psd.PageSettings.Color = Postavke.PageSettingsColor;
+            psd.PageSettings.Landscape = Postavke.PageSettingsLandscape;
 
             //pohrani nove postavke
             if (psd.ShowDialog() == DialogResult.OK)
             {
-                PageSettings = psd.PageSettings;
-
                 Postavke.PageSettingsColor = psd.PageSettings.Color;
                 Postavke.PageSettingsLandscape = psd.PageSettings.Landscape;
                 UpdateEntry();
@@ -305,8 +299,11 @@ namespace Notepad
         {
             //pre-made forma napravljena za WPF projekte
             System.Windows.Controls.PrintDialog pd = new System.Windows.Controls.PrintDialog();
+
             PrintDocument doc = new PrintDocument();
-            doc.DefaultPageSettings = PageSettings;
+            doc.DefaultPageSettings = new PageSettings();
+            doc.DefaultPageSettings.Color = Postavke.PageSettingsColor;
+            doc.DefaultPageSettings.Landscape = Postavke.PageSettingsLandscape;
             doc.PrintPage += new PrintPageEventHandler(Document_PrintPage);
 
             //pokaži formu i printaj ako je "Ispis" pritisnut
