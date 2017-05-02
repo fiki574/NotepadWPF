@@ -4,6 +4,8 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.IO;
 using System.Text;
+using System.Drawing.Printing;
+using System.Drawing;
 using Notepad.Forme;
 
 namespace Notepad
@@ -33,6 +35,12 @@ namespace Notepad
         //Idi na, Otvori i Nova: shortcut-i ovih funkcija dodaju zadnje slovo shortcut-a u text box
         public bool[] fixes = new bool[3] { false, false, false };
 
+        //postavke stranice
+        public PageSettings PageSettings;
+
+        //font text box-a
+        public Font Font;
+
         //glavni konstruktor ovog layouta
         public TextEditor()
         {
@@ -61,6 +69,8 @@ namespace Notepad
             FullPath = null;
             Changed = false;
             TextData.FontFamily = new System.Windows.Media.FontFamily("Consolas");
+            PageSettings = new PageSettings();
+            Font = new Font("Consolas", 16);
 
             //programatsko kreiranje trake stanja
             traka = new System.Windows.Controls.Label();
@@ -235,17 +245,27 @@ namespace Notepad
 
         private void Postavljanje_Click(object sender, RoutedEventArgs e)
         {
-            //TODO: dizajn layout-a
+            //prikaži pre-made formu za postavljanje stranice
+            PageSetupDialog psd = new PageSetupDialog();
+
+            //ovo je potrebno inače je bačen "NullPointerException"
+            psd.PageSettings = PageSettings;
+
+            //pohrani nove postavke
+            if(psd.ShowDialog() == DialogResult.OK) PageSettings = psd.PageSettings;
         }
 
         private void Ispis_Click(object sender, RoutedEventArgs e)
         {
             //pre-made forma napravljena za WPF projekte
             System.Windows.Controls.PrintDialog pd = new System.Windows.Controls.PrintDialog();
+            PrintDocument doc = new PrintDocument();
+            doc.DefaultPageSettings = PageSettings;
+            doc.PrintPage += new PrintPageEventHandler(Document_PrintPage);
 
             //pokaži formu i printaj ako je "Ispis" pritisnut
             bool? show = pd.ShowDialog();
-            if(show == true) pd.PrintVisual(TextData, "Printanje...");
+            if (show == true) doc.Print();
         }
 
         private void Izlaz_Click(object sender, RoutedEventArgs e)
@@ -359,6 +379,7 @@ namespace Notepad
                 TextData.FontSize = fd.Font.Size * 96.0 / 72.0;
                 TextData.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
                 TextData.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
+                Font = fd.Font;
             }
         }
 
@@ -443,6 +464,27 @@ namespace Notepad
             //najjednostavnije je samo pozvat već postojeći event koji radi identičnu stvar
             if(TrakaStanja.IsChecked)
                 TextData_TextChanged(sender, null);
+        }
+
+        //ovaj event zapravo printa tekst na papir
+        private void Document_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            float linesPerPage = 0, yPos = 0, leftMargin = e.MarginBounds.Left, topMargin = e.MarginBounds.Top;
+            int count = 0;
+            string line = null;
+            StreamReader stream = new StreamReader(FullPath);
+
+            linesPerPage = e.MarginBounds.Height / Font.GetHeight(e.Graphics);
+
+            while (count < linesPerPage && ((line = stream.ReadLine()) != null))
+            {
+                yPos = topMargin + (count * Font.GetHeight(e.Graphics));
+                e.Graphics.DrawString(line, Font, Brushes.Black, leftMargin, yPos, new StringFormat());
+                count++;
+            }
+
+            if (line != null) e.HasMorePages = true;
+            else e.HasMorePages = false;
         }
 
         #endregion
