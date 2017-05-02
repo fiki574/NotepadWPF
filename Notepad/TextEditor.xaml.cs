@@ -82,7 +82,7 @@ namespace Notepad
 
         #region Metode koje poziva handler
 
-        //funckija koja automatski resize-a TextBox kako bi zauzeo širinu i visinu prikladno širini i visini glavnog prozora
+        //funkcija koja automatski resize-a TextBox kako bi zauzeo širinu i visinu prikladno širini i visini glavnog prozora
         public void Resize(System.Windows.Size s)
         {
             //TextBox smanjujemo za određene vrijednosti kako bi layout stali u prozor
@@ -95,7 +95,6 @@ namespace Notepad
         }
 
         //javna methoda koja je pozvana od strane MainWindow-a i koja poziva event handler-e ovisno o pritisnutom shortcut-u
-        //BUG: negdje dodaje slovo od shortcuta na prvo mjesto u tekstu zbog zakašnjelog input-a (RJ: boolean-ovi)
         public void Shortcut(string s)
         {
             if (s == "Nova")
@@ -127,8 +126,8 @@ namespace Notepad
             else if (s == "Izbrisi") Izbrisi_Click(this, null);
             else if (s == "VrijemeDatum") VrijemeDatum_Click(this, null);
         }
-
-        //BUG: ako je DynamicWindow u fokusu, pritisak na "Traži sljedeće" će radit ispravno, ALI neće highlight-a pojave teksta (TEMP.RJ.: koristiti F3)
+        
+        //javna metoda za pronalazak pojavljivanja određene/ih riječi u tekstu
         public bool FindAndSelect(string search, bool casesensitive, bool down)
         {
             int index;
