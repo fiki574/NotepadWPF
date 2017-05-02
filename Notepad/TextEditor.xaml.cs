@@ -132,17 +132,16 @@ namespace Notepad
         public bool FindAndSelect(string search, bool casesensitive, bool down)
         {
             int index;
-            var eStringComparison = casesensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
-            if (down) index = TextData.Text.IndexOf(search, TextData.SelectionStart + TextData.SelectionLength, eStringComparison);
-            else index = TextData.Text.LastIndexOf(search, TextData.SelectionStart, TextData.SelectionStart, eStringComparison);
+            var strcmp = casesensitive ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
+            if (down) index = TextData.Text.IndexOf(search, TextData.SelectionStart + TextData.SelectionLength, strcmp);
+            else index = TextData.Text.LastIndexOf(search, TextData.SelectionStart, TextData.SelectionStart, strcmp);
             if (index == -1) return false;
 
             Trazi.LastSearch = search;
             Trazi.LastCaseSensitive = casesensitive;
             Trazi.LastDown = down;
 
-            TextData.SelectionStart = index;
-            TextData.SelectionLength = search.Length;
+            TextData.Select(index, search.Length);
             return true;
         }
 
