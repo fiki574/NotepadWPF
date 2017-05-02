@@ -36,7 +36,7 @@
                 </MenuItem>
 
                 <MenuItem Header="_Oblikovanje" Name="Oblikovanje">
-                    <MenuItem Header="_Prelomi riječi" Click="PrelomiRijeci_Click" IsCheckable="True"/>
+                    <MenuItem Header="_Prelomi riječi" Click="PrelomiRijeci_Click" IsCheckable="True" Name="WordWrap"/>
                     <MenuItem Header="_Font" Click="Font_Click"/>
                 </MenuItem>
 

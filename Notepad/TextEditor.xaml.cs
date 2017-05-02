@@ -7,6 +7,7 @@ using System.Text;
 using System.Drawing.Printing;
 using System.Drawing;
 using Notepad.Forme;
+using FFramework.Utilities;
 
 namespace Notepad
 {
@@ -38,14 +39,45 @@ namespace Notepad
         //postavke stranice
         public PageSettings PageSettings;
 
-        //font text box-a
-        public Font Font;
+        //varijable vezane uz file bazu podataka
+        public FDB Baza;
+        public Settings Postavke;
+        public FDBFile PostavkeFile;
 
         //glavni konstruktor ovog layouta
         public TextEditor()
         {
             //core funkcija, iscrtava komponente iz danog XAML koda
             InitializeComponent();
+
+            //load-anje postavki iz file baze
+            Baza = new FDB("postavke");
+            Baza.AddFile("", 1);
+            PostavkeFile = Baza.GetFiles().Find(fi => fi.ID == 1);
+            try
+            {
+                Postavke = Baza.Read<Settings>(ref PostavkeFile)[0];
+                TextData.FontFamily = new System.Windows.Media.FontFamily(Postavke.FontFamily);
+                TextData.FontSize = Postavke.FontSize;
+                TextData.FontWeight = Postavke.FontWeight ? FontWeights.Bold : FontWeights.Regular;
+                TextData.FontStyle = Postavke.FontWeight ? FontStyles.Italic : FontStyles.Normal;
+                PageSettings = new PageSettings();
+                PageSettings.Color = Postavke.PageSettingsColor;
+                PageSettings.Landscape = Postavke.PageSettingsLandscape;
+            }
+            catch
+            {
+                Postavke = new Settings();
+                Postavke.TrakaStanja = false;
+                Postavke.WordWrap = false;
+                Postavke.PageSettingsColor = false;
+                Postavke.PageSettingsLandscape = false;
+                Postavke.FontFamily = "Consolas";
+                Postavke.FontSize = 21;
+                Postavke.FontStyle = false;
+                Postavke.FontWeight = false;
+                UpdateEntry();
+            }
 
             //assign-a ovaj cijeli novokreirani objekt TextEdit-orovom handleru
             MainWindow.handler = new Utilities.TextEditorHandler(this);
@@ -68,9 +100,6 @@ namespace Notepad
             //postavljanje varijabli na default vrijednosti
             FullPath = null;
             Changed = false;
-            TextData.FontFamily = new System.Windows.Media.FontFamily("Consolas");
-            PageSettings = new PageSettings();
-            Font = new Font("Consolas", 16);
 
             //programatsko kreiranje trake stanja
             traka = new System.Windows.Controls.Label();
@@ -78,6 +107,18 @@ namespace Notepad
             traka.Margin = new Thickness(0, 0, 100, 38);
             traka.VerticalAlignment = VerticalAlignment.Bottom;
             traka.Content = "Rd 0, St 0";
+
+            if (Postavke.TrakaStanja)
+            {
+                TrakaStanja.IsChecked = true;
+                TrakaStanja_Click(this, null);
+            }
+
+            if (Postavke.WordWrap)
+            {
+                WordWrap.IsChecked = true;
+                PrelomiRijeci_Click(this, null);
+            }
         }
 
         #region Metode koje poziva handler
@@ -250,7 +291,14 @@ namespace Notepad
             psd.PageSettings = PageSettings;
 
             //pohrani nove postavke
-            if(psd.ShowDialog() == DialogResult.OK) PageSettings = psd.PageSettings;
+            if (psd.ShowDialog() == DialogResult.OK)
+            {
+                PageSettings = psd.PageSettings;
+
+                Postavke.PageSettingsColor = psd.PageSettings.Color;
+                Postavke.PageSettingsLandscape = psd.PageSettings.Landscape;
+                UpdateEntry();
+            }
         }
 
         private void Ispis_Click(object sender, RoutedEventArgs e)
@@ -355,8 +403,20 @@ namespace Notepad
         private void PrelomiRijeci_Click(object sender, RoutedEventArgs e)
         {
             //jednostavno mijenjanje prijeloma riječi, čak se ne treba IsChecked koristit
-            if (TextData.TextWrapping == TextWrapping.NoWrap) TextData.TextWrapping = TextWrapping.Wrap;
-            else TextData.TextWrapping = TextWrapping.NoWrap;
+            if (TextData.TextWrapping == TextWrapping.NoWrap)
+            {
+                TextData.TextWrapping = TextWrapping.Wrap;
+
+                Postavke.WordWrap = true;
+                UpdateEntry();
+            }
+            else 
+            {
+                TextData.TextWrapping = TextWrapping.NoWrap;
+
+                Postavke.WordWrap = false;
+                UpdateEntry();
+            }
         }
 
         private void Font_Click(object sender, RoutedEventArgs e)
@@ -377,7 +437,12 @@ namespace Notepad
                 TextData.FontSize = fd.Font.Size * 96.0 / 72.0;
                 TextData.FontWeight = fd.Font.Bold ? FontWeights.Bold : FontWeights.Regular;
                 TextData.FontStyle = fd.Font.Italic ? FontStyles.Italic : FontStyles.Normal;
-                Font = fd.Font;
+
+                Postavke.FontFamily = fd.Font.Name;
+                Postavke.FontSize = (int)TextData.FontSize;
+                Postavke.FontWeight = fd.Font.Bold ? true : false;
+                Postavke.FontStyle = fd.Font.Italic ? true : false;
+                UpdateEntry();
             }
         }
 
@@ -391,12 +456,18 @@ namespace Notepad
                 traka.Content = "Rd 0, St 0";
                 TextData_TextChanged(sender, null);
                 MainGrid.Children.Add(traka);
+
+                Postavke.TrakaStanja = true;
+                UpdateEntry();
             }
             else
             {
                 Visina -= TrakaVisina;
                 TextData.Height += TrakaVisina;
                 MainGrid.Children.Remove(traka);
+
+                Postavke.TrakaStanja = false;
+                UpdateEntry();
             }
         }
 
@@ -470,14 +541,15 @@ namespace Notepad
             float linesPerPage = 0, yPos = 0, leftMargin = e.MarginBounds.Left, topMargin = e.MarginBounds.Top;
             int count = 0;
             string line = null;
+            Font font = new Font(Postavke.FontFamily, Postavke.FontSize, Postavke.FontStyle ? System.Drawing.FontStyle.Italic : System.Drawing.FontStyle.Regular);
             StreamReader stream = new StreamReader(FullPath);
 
-            linesPerPage = e.MarginBounds.Height / Font.GetHeight(e.Graphics);
+            linesPerPage = e.MarginBounds.Height / font.GetHeight(e.Graphics);
 
             while (count < linesPerPage && ((line = stream.ReadLine()) != null))
             {
-                yPos = topMargin + (count * Font.GetHeight(e.Graphics));
-                e.Graphics.DrawString(line, Font, Brushes.Black, leftMargin, yPos, new StringFormat());
+                yPos = topMargin + (count * font.GetHeight(e.Graphics));
+                e.Graphics.DrawString(line, font, Brushes.Black, leftMargin, yPos, new StringFormat());
                 count++;
             }
 
@@ -552,6 +624,12 @@ namespace Notepad
                 Utilities.CreateExceptionFile(ex);
                 return MessageBoxResult.None;
             }
+        }
+
+        public void UpdateEntry()
+        {
+            Baza.Write(new System.Collections.Generic.List<Settings>() { Postavke }, ref PostavkeFile);
+            Baza.CommitChanges();
         }
 
         #endregion

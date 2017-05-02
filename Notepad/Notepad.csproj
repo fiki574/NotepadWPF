@@ -38,6 +38,9 @@
     <ApplicationIcon>notebook.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FFramework">
+      <HintPath>.\FFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -72,6 +75,7 @@
     <Compile Include="Forme\Zamijeni.xaml.cs">
       <DependentUpon>Zamijeni.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="TextEditor.xaml.cs">
       <DependentUpon>TextEditor.xaml</DependentUpon>
     </Compile>
